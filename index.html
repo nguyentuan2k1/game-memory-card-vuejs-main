@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GAME MEMORY CARD</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+  <script src="https://kit.fontawesome.com/38b1eecda0.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link rel="shortcut icon" href="https://www.favicon.cc/logo3d/261018.png" type="image/x-icon">
+  <link rel="stylesheet" href="./public/css/style.css" />
+</head>
+
+<body>
+  <div id="msg">
+  </div>
+  <div id="app" :class="darkMode ? 'dark-mode' : 'light-mode'" class="pt-2" style="display:none;">
+    <header>
+      <h1 :class="{animate__animated :animate}" class="mb-2 text-center animate__fadeInUp">GAME MEMORY CARD 🃏
+      </h1>
+    </header>
+    <main>
+      <div>
+        <div class="container-fluid">
+          <div class="login text-center" v-if="!login">
+            <h1 :class="{animate__animated :animate}" class="mt-5 animate__fadeInUp">SIGN IN</h1>
+            <div :class="{animate__animated :animate}" class="btn-group mb-2 animate__fadeInLeft"
+              @click="loginFbAndGg('gg')">
+              <a class="btn btn-danger" style="width: 50px"><i class="fa fa-google-plus"
+                  style="width: 16px; height: 20px"></i></a>
+              <a class="btn btn-danger" style="width: 16em">
+                Sign in with Google</a>
+            </div>
+            <br />
+            <div :class="{animate__animated :animate}" class="btn-group animate__fadeInRight"
+              @click="loginFbAndGg('fb')">
+              <a class="btn btn-primary" style="width: 50px"><i class="fa fa-facebook"
+                  style="width: 16px; height: 20px"></i></a>
+              <a class="btn btn-primary" style="width: 16em">
+                Sign in with Facebook</a>
+            </div>
+          </div>
+          <div class="game-and-chat" v-else>
+            <div class="d-flex justify-content-around row">
+              <button :class="{animate__animated :animate}" class="btn btn-success  animate__fadeInLeft"
+                @click="showGame()" :class="show==='game' ? 'font-bigger' : ''">
+                GAME <i class="fas fa-gamepad"></i>
+              </button>
+              <button :class="{animate__animated :animate}" class="btn btn-secondary  animate__fadeInLeft"
+                @click="showChat()" :class="show==='chat' ? 'font-bigger' : ''">
+                CHAT <i class="far fa-comments"></i>
+              </button>
+              <button :class="{animate__animated :animate}" class="btn btn-primary  animate__fadeInLeft"
+                @click="showProfile()" :class="show==='profile' ? 'font-bigger' : ''">
+                PROFILE <i class="far fa-user"></i>
+              </button>
+              <button :class="{animate__animated :animate}" class="btn btn-warning  animate__fadeInLeft"
+                @click="showRank()" :class="show==='rank' ? 'font-bigger' : ''">
+                RANK <i class="fas fa-users"></i>
+              </button>
+              <button :class="{animate__animated :animate}" class="btn btn-danger  animate__fadeInRight"
+                @click="showBuy()" :class="show==='buy' ? 'font-bigger' : ''">
+                BUY <i class="fas fa-shopping-cart"></i></i>
+              </button>
+              <button :class="{animate__animated :animate}" class="btn btn-info  animate__fadeInRight"
+                @click="showSetting()" :class="show==='setting' ? 'font-bigger' : ''">
+                SETTING <i class="fas fa-cogs"></i>
+              </button>
+              <button :class="{animate__animated :animate}" class="btn btn-primary  animate__fadeInRight"
+                @click="showAbout()" :class="show==='about' ? 'font-bigger' : ''">
+                ABOUT GAME <i class="fas fa-info"></i>
+              </button>
+              <button :class="{animate__animated :animate}" class="btn btn-danger animate__fadeInRight"
+                @click="btnLogout()">
+                SIGN OUT <i class="fas fa-sign-out-alt"></i>
+              </button>
+            </div>
+            <div class="buy" v-if="show==='buy'">
+              <div class="text-center m-5">
+                <app></app>
+              </div>
+            </div>
+            <div class="about" v-if="show==='about'">
+              <div class="text-center m-5">
+                <p>Made by ...</p>
+              </div>
+            </div>
+            <div :class="{animate__animated :animate}" class="profile text-center  animate__rotateInDownLeft"
+              v-if="show==='profile'">
+              <img :src="linkImg" class="avatar-profile" />
+              <h2 class="mt-2">{{name}}</h2>
+              <h1>Record</h1>
+              <h3>Minutes:{{this.totalTime.minutes}}</h3>
+              <h2>Seconds:{{this.totalTime.seconds}}</h4>
+                <h2>Turns:{{this.turns}}</h2>
+            </div>
+            <div :class="{animate__animated :animate}" class="rank animate__fadeInUp" v-if="show==='rank'">
+              <div class="d-flex justify-content-end">
+                <input type="text" placeholder="Find player by name" class="mr-3 find-player"
+                  v-on:keyup.enter="findPlayer()" v-model="namePlayer">
+                <button class="btn btn-primary m-0" @click="findPlayer()">Find</button>
+              </div>
+              <h1 :style="doesNotExist ? '' : 'display:none'" class="text-center">{{canNotFind}}</h1>
+              <div class="table-responsive">
+                <table class="table text-center" :class="darkMode ? 'table-dark-mode' : 'table-light-mode'"
+                  :style="doesNotExist ? 'display:none' : ''">
+                  <thead>
+                    <tr>
+                      <th scope="col">Avatar</th>
+                      <th scope="col">Name</th>
+                      <th scope="col">Minutes</th>
+                      <th scope="col">Seconds</th>
+                      <th scope="col">Turns</th>
+                    </tr>
+                  </thead>
+                  <tbody v-html="rank"></tbody>
+                </table>
+              </div>
+              <div class="load-more-rank d-flex justify-content-center">
+                <button class="btn btn-primary" @click="loadMoreRank()" :style="isFullPlayer ? 'display:none' : ''">
+                  LOAD MORE ...
+                </button>
+              </div>
+            </div>
+            <div class="setting" v-if="show==='setting'">
+              <div class="row mt-3">
+                <div :class="{animate__animated :animate}" class="col-6 text-center animate__zoomIn">
+                  <h4>
+                    Dark mode:
+                  </h4>
+                  <h4>
+                    Random image:
+                  </h4>
+                  <h4>
+                    Animate:
+                  </h4>
+                  <h4>
+                    Soundtrack:
+                  </h4>
+                </div>
+                <div :class="{animate__animated :animate}" class="col-6 text-center animate__zoomIn">
+                  <label class="switch">
+                    <input type="checkbox" @click="switchDarkMode()" :class="darkMode ? 'beChecked' : ''" />
+                    <span class="slider round" :class="darkMode ? 'beChecked' : ''"></span>
+                  </label>
+                  <br>
+                  <label class="switch">
+                    <input type="checkbox" @click="switchRandomImg()" :class="randomImg ? 'beChecked' : ''" />
+                    <span class="slider round" :class="randomImg ? 'beChecked' : ''"></span>
+                  </label>
+                  <br>
+                  <label class="switch">
+                    <input type="checkbox" @click="switchAnimate()" :class="animate ? 'beChecked' : ''" />
+                    <span class="slider round" :class="animate ? 'beChecked' : ''"></span>
+                  </label>
+                  <br>
+                  <label class="switch">
+                    <input type="checkbox" @click="switchSoundtrack()" :class="soundtrack ? 'beChecked' : ''" />
+                    <span class="slider round" :class="soundtrack ? 'beChecked' : ''"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="game" v-if="show==='game'">
+              <div class="container-fluid">
+                <div class="row">
+                  <div v-for="card in memoryCards" class="col-lg-1 col-md-2 col-sm-3 col-4 mb-2 flip-container"
+                    style="padding: 0;margin: 0;" :class="{ 'flipped': card.isFlipped, 'matched' : card.isMatched }"
+                    @click="flipCard(card)">
+                    <div class="memorycard">
+                      <div class="front">
+                        <img :class="{animate__animated :animate}" width="100%" height="100%" class=" animate__zoomIn"
+                          :src="darkMode ? './public/images/card-dark-mode.png' : './public/images/card.png' " />
+                      </div>
+                      <div class="back rounded border">
+                        <img width="100%" height="100%" :src="card.img" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="row d-flex justify-content-center">
+                <div v-if="finish ? addAndUpdateResult() : null"></div>
+                <div class="totalTime p-2">
+                  <span class="btn btn-info">Total Time :
+                    <span class="badge" :class="finish ? 'badge-success' : 'badge-light'">{{min}} :
+                      {{sec}}</span></span>
+                </div>
+                <div class="turns p-2">
+                  <span class="btn btn-info">Turns :
+                    <span class="badge" :class="finish ? 'badge-success' : 'badge-light'">{{turns}}</span>
+                  </span>
+                </div>
+                <div class="totalTime p-2">
+                  <button class="btn btn-info" @click="reset" :disabled="!start">
+                    Restart
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="chat" v-if="show==='chat'">
+              <div class="message-body">
+                <div class="d-flex mb-2">
+                  <input v-model="showMessage" type="text" class="text-right" v-on:keyup.enter="sendMessage" />
+                  <button class="btn btn-primary d-flex ml-2" @click="sendMessage" style="margin: 0">
+                    Send
+                    <i class="fas fa-paper-plane ml-2 mt-1"></i>
+                  </button>
+                </div>
+                <div v-for="message in messages" :class="[{animate__animated :animate}, message.positionMessText]"
+                  class="p-2 mb-1 animate__zoomIn" :key="message.id">
+                  <h5 class="mg-text text-danger break-word" :class="message.positionText">
+                    <div><img :src="message.linkImg" class="avatar-player" /></div>
+                    <div style="line-height: 50px;" class="ml-2 mr-2">{{message.name }}</div>
+                  </h5>
+                  <p class="message break-word" :class="message.positionText">
+                    {{ message.text }}
+                  </p>
+                  <p class="message break-word" :class="message.positionText">
+                    {{ message.createdAt }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <a id="back-to-top" href="#" class="btn btn-success btn-lg back-to-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <script src="https://www.gstatic.com/firebasejs/8.4.1/firebase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.15/lodash.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+  <script src="https://momentjs.com/downloads/moment-with-locales.js"></script>
+  <script
+    src="https://www.paypal.com/sdk/js?client-id=AXvfrDsXiASY9lWMSC8xKOlrxLsLLDrX23Nux0mk4G5kh8-Sa3u7jLjMJZXrV-bXzTZZ29nyAtnk0xPo"></script>
+  <script src="./public/js/script.js"></script>
+</body>
+
+</html>
